@@ -1,27 +1,37 @@
+import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 function Navbar() {
+  const { user, logoutUser } = useAuth();
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">EMS</a>
+        <Link to="/" className="btn btn-ghost text-xl">
+          EMS
+        </Link>
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
-          <li>
-            <a>Login</a>
-          </li>
-          <li>
+          {!user ? (
+            <li>
+              <a>Login</a>
+            </li>
+          ) : (
+            <li>
             <details>
-              <summary>Parent</summary>
-              <ul className="bg-base-100 rounded-t-none p-2">
+              <summary>{user.user_name}</summary>
+              <ul className="bg-base-100 rounded-t-none p-2 flex flex-col gap-y-4">
                 <li>
-                  <a>Link 1</a>
+                  <a>Account</a>
                 </li>
                 <li>
-                  <a>Link 2</a>
+                  <a onClick={logoutUser} className="btn btn-error text-white">Logout</a>
                 </li>
               </ul>
             </details>
           </li>
+          )}
+          
+          
         </ul>
       </div>
     </div>
