@@ -1,8 +1,8 @@
 import React from 'react'
-
+import DepartmentForm from './DepartmentForm'
 function DepartmentCreate() {
   return (
-    <div>DepartmentCreate</div>
+    <DepartmentForm />
   )
 }
 

@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     "corsheaders",
     'rest_framework_simplejwt',
+    'django_filters',
+    'drf_spectacular',
     'users',
     'app',
 ]
@@ -143,6 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DATETIME_FORMAT': "%d/%m/%Y %H:%M",
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {

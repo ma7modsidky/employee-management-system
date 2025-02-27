@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import CompanyList from "./pages/Company/CompanyList";
 import CompanyDetail from "./pages/Company/CompanyDetail";
+import CompanyPageLayout from "./pages/Company/CompanyPageLayout";
 import CompanyCreate from "./pages/Company/CompanyCreate";
 import CompanyEdit from "./pages/Company/CompanyEdit";
 import DepartmentList from "./pages/Department/DepartmentList";
@@ -17,7 +18,9 @@ import EmployeeList from "./pages/Employee/EmployeeList";
 import EmployeeDetail from "./pages/Employee/EmployeeDetail";
 import EmployeeCreate from "./pages/Employee/EmployeeCreate";
 import EmployeeEdit from "./pages/Employee/EmployeeEdit";
+import EmployeeForm from "./pages/Employee/EmployeeForm";
 import Layout from "./components/Layout";
+import DepartmentPageLayout from "./pages/Department/DepartmentPageLayout";
 function App() {
   return (
     <>
@@ -28,29 +31,39 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            {/* Dashboard */}
             <Route path="/" element={<Dashboard />} />
+            {/* Company Management */}
             <Route path="/company">
               <Route index element={<CompanyList />} />
-              <Route path=":id" element={<CompanyDetail />} />
-              <Route path="create" element={<CompanyCreate />} />
-              <Route path="edit/:id" element={<CompanyEdit />} />
+              <Route path=":companyId" element={<CompanyPageLayout />}>
+                <Route path='' element={<CompanyDetail />} />
+                <Route path="edit" element={<CompanyEdit />} />
+                <Route path="department">
+                  <Route index element={<DepartmentList />} />
+                  <Route path=":departmentId" element={<DepartmentPageLayout />} >
+                    <Route path='' element={<DepartmentDetail />} />
+                  </Route>
+                </Route>
+              </Route>
+              <Route path='create' element={<CompanyCreate />} />
             </Route>
             <Route path="/department">
               <Route index element={<DepartmentList />} />
-              <Route path=":id" element={<DepartmentDetail />} />
+              <Route path=":departmentId" element={<DepartmentDetail />} />
               <Route path="create" element={<DepartmentCreate />} />
-              <Route path="edit/:id" element={<DepartmentEdit />} />
+              <Route path=":departmentId/edit" element={<DepartmentEdit />} />
             </Route>
             <Route path="/employee">
               <Route index element={<EmployeeList />} />
-              <Route path=":id" element={<EmployeeDetail />} />
+              <Route path=":employeeId" element={<EmployeeDetail />} />
               <Route path="create" element={<EmployeeCreate />} />
-              <Route path="edit/:id" element={<EmployeeEdit />} />
+              <Route path=":employeeId/edit" element={<EmployeeEdit />} />
             </Route>
           </Route>
 
           {/* Fallback Route */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
         </Route>
       </Routes>
     </>

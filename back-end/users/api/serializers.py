@@ -8,18 +8,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('user_name', 'email_address', 'role', 'password')
+        fields = ('user_name', 'email', 'role', 'password')
 
     def create(self, validated_data):
         user = User(
             user_name=validated_data['user_name'],
-            email_address=validated_data['email_address'],
+            email=validated_data['email'],
             role=validated_data['role']
         )
         user.set_password(validated_data['password'])
         user.save()
         return user
-    
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('user_name', 'email', 'role')
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('user_name', 'email', 'role')
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
@@ -34,8 +44,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         #     }
         
         token['user_name'] = user.user_name
+        token['name']  = user.name
         token['email']  = user.email
-        token['name']  = user.email
-        token['role']  = user.email
+        token['role']  = user.role
         return token
     

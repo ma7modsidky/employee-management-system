@@ -1,8 +1,7 @@
-import React from 'react'
-
+import EmployeeForm from "./EmployeeForm"
 function EmployeeCreate() {
   return (
-    <div>EmployeeCreate</div>
+    <EmployeeForm />
   )
 }
 

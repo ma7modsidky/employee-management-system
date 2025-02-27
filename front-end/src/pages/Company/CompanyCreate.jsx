@@ -1,7 +1,9 @@
 
+import CompanyForm from "./CompanyForm"
+
 function CompanyCreate() {
   return (
-    <div>CompanyCreate</div>
+    <CompanyForm />
   )
 }
 
