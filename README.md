@@ -1,4 +1,4 @@
-```markdown
+
 # **📌 Project Name**
 A Full-Stack **Django + React** Employee Management System Application
 
