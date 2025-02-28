@@ -85,7 +85,7 @@ const DepartmentForm = ({ departmentData }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-lg bg-base-100 shadow-md rounded px-8 pt-6 pb-8 mb-4"
@@ -164,7 +164,7 @@ const DepartmentForm = ({ departmentData }) => {
           >
             Submit
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+          <button className="btn btn-error" onClick={() => navigate(-1)}>
             Cancel
           </button>
         </div>

@@ -145,7 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',  # Default to requiring authentication
+        # 'rest_framework.permissions.IsAuthenticated',  # Default to requiring authentication
     ),
     'DATETIME_FORMAT': "%d/%m/%Y %H:%M",
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -164,4 +164,11 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',  # Local memory cache (for development)
+        'TIMEOUT': 600,  # Cache timeout in seconds (10 minutes)
+    }
 }
