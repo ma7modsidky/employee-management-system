@@ -1,10 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import EmailValidator, RegexValidator
 from django.utils import timezone
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from datetime import date
+from django.core.cache import cache
+
 
 
 class Company(models.Model):
@@ -85,3 +86,12 @@ def update_counts(sender, instance, **kwargs):
     department.number_of_employees = department.employees.count()
     company.save()
     department.save()
+
+@receiver(post_save, sender=Company)
+@receiver(post_save, sender=Department)
+@receiver(post_save, sender=Employee)
+@receiver(post_delete, sender=Company)
+@receiver(post_delete, sender=Department)
+@receiver(post_delete, sender=Employee)
+def clear_dashboard_cache(sender, **kwargs):
+    cache.delete("dashboard_counts")

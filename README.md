@@ -160,6 +160,74 @@ If Swagger is set up, visit:\
 📌 [**http://127.0.0.1:8000/api/docs/**](http://127.0.0.1:8000/api/docs/)
 
 ---
+Here’s a draft for your `README.md` section explaining the **Role-Based Access Control (RBAC)** logic in your application. You can customize it further based on your project's specifics:
+
+---
+
+## Role-Based Access Control (RBAC)
+
+The application implements a **Role-Based Access Control (RBAC)** system to manage user permissions and ensure secure access to resources. The system defines three primary roles: **Admin**, **Manager**, and **Employee**. Each role has specific permissions for accessing and manipulating resources within the application.
+
+### Roles and Permissions
+
+#### 1. **Admin**
+- **Full Access**: Admins have unrestricted access to all resources and actions within the application.
+- **Permissions**:
+  - Create, read, update, and delete (CRUD) operations on all resources.
+  - Manage users, roles, and permissions.
+- **Resources**: Company, Departments, Employee, and User.
+
+#### 2. **Manager**
+- **Partial Access**: Managers can access and modify most resources but are restricted from performing delete operations.
+- **Permissions**:
+  - Create, read, and update (CRU) operations on resources.
+  - Cannot delete any resources.
+- **Resources**: Company, Departments, Employee, and User.
+
+#### 3. **Employee**
+- **Limited Access**: Employees have the most restricted access and can only view data related to themselves.
+- **Permissions**:
+  - Read-only access to their own User details.
+  - Cannot create, update, or delete any resources.
+  - Cannot view or modify data related to other employees, departments, or companies.
+- **Resources**: User (self only).
+
+### Resource Overview
+
+The application manages the following resources, each with role-specific access controls:
+
+1. **Company**:
+   - Admins and managers can view, create, update, and (for admins only) delete company details.
+   - Employees cannot access company-related data.
+
+2. **Departments**:
+   - Admins and managers can view, create, update, and (for admins only) delete department details.
+   - Employees cannot access department-related data.
+
+3. **Employee**:
+   - Admins and managers can view, create, update, and (for admins only) delete employee records.
+   - Employees cannot access other employees' data.
+
+4. **User**:
+   - Admins and managers can view, create, update, and (for admins only) delete user accounts.
+   - Employees can only view their own user details and cannot edit or delete them.
+
+### Example Workflow
+
+- An **Admin** can:
+  - Add a new company, department, or employee.
+  - Update or delete any resource.
+  - Manage user roles and permissions.
+
+- A **Manager** can:
+  - View and update company, department, and employee details.
+  - Cannot delete any resources.
+
+- An **Employee** can:
+  - View their own user details (e.g., name, email, role).
+  - Cannot view or modify any other data in the system.
+
+---
 
 ## **🔹 Useful Commands**
 

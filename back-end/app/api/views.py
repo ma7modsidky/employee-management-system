@@ -5,7 +5,10 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import EmployeeFilter, DepartmentFilter
 from django.http import JsonResponse
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
+from django.core.cache import cache
+from rest_framework.pagination import PageNumberPagination
+
 
 
 # Company Views
@@ -20,7 +23,8 @@ class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
 
 # Department Views
 class DepartmentList(generics.ListCreateAPIView):
-    queryset = Department.objects.all()
+    queryset = Department.objects.select_related('company').all()  # Optimize querie
+
     serializer_class = DepartmentSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = DepartmentFilter
@@ -37,8 +41,12 @@ class DepartmentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DepartmentSerializer
 
 # Employee Views
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 20  # Number of records per page
+    page_size_query_param = 'page_size'  # Allow client to override page size
+    max_page_size = 100  # Maximum page size allowed
 class EmployeeListCreate(generics.ListCreateAPIView):
-    queryset = Employee.objects.all()
+    queryset = Employee.objects.select_related('company', 'department').all()  # Optimize querie
     serializer_class = EmployeeDetailsSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
@@ -56,9 +64,20 @@ class EmployeeDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 def get_counts(request):
-    counts = {
-        "companies": Company.objects.count(),
-        "departments": Department.objects.count(),
-        "employees": Employee.objects.count(),
-    }
+    # Define a unique cache key for this data
+    cache_key = 'dashboard_counts'
+    
+    # Try to get the counts from the cache
+    counts = cache.get(cache_key)
+    
+    # If the counts are not in the cache, query the database and store the result in the cache
+    if counts is None:
+        counts = {
+            "companies": Company.objects.count(),
+            "departments": Department.objects.count(),
+            "employees": Employee.objects.count(),
+        }
+        # Store the counts in the cache with a timeout (e.g., 5 minutes)
+        cache.set(cache_key, counts, timeout=300)
+    
     return JsonResponse(counts)

@@ -10,12 +10,12 @@ const EmployeeList = ({departmentId}) => {
     { key: "company", header: "Company" },
     { key: "department", header: "Department" },
     { key: "designation", header: "Designation" },
+    { key: "employee_status", header: "Status" },
   ];
   const url = departmentId ? `employees/?department=${departmentId}`: `employees/`
 
   const { data, loading, error } = useFetch(url);
   const [filteredData, setFilteredData] = useState([]);
-  console.log(data)
   useEffect(() => {
     if (data && data.length > 0) {
       setFilteredData([...data]); // Update filteredData once data is fetched

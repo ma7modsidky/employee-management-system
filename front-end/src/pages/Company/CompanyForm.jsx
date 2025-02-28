@@ -118,7 +118,7 @@ const CompanyForm = ({ companyData }) => {
           >
             Submit
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+          <button className="btn btn-error" onClick={() => navigate(-1)}>
             Cancel
           </button>
         </div>
