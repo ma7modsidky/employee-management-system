@@ -160,9 +160,6 @@ If Swagger is set up, visit:\
 📌 [**http://127.0.0.1:8000/api/docs/**](http://127.0.0.1:8000/api/docs/)
 
 ---
-Here’s a draft for your `README.md` section explaining the **Role-Based Access Control (RBAC)** logic in your application. You can customize it further based on your project's specifics:
-
----
 
 ## Role-Based Access Control (RBAC)
 
