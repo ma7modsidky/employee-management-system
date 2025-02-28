@@ -63,37 +63,48 @@ const EmployeeForm = ({ employeeData }) => {
   const onSubmit = async (data) => {
     try {
       let response;
-      
+
       if (employeeData) {
         response = await axios.put(url, data);
       } else {
         response = await axios.post(url, data);
       }
-  
+
       // Show success modal
       setIsSuccessModalOpen(true);
-  
+
       // Redirect to employee detail page after 2 seconds
       setTimeout(() => {
         navigate(`/employee/${response.data.id}`);
       }, 2000);
     } catch (error) {
       // Set error message and show error modal
-      if (error.response?.data?.message) {
-        setErrorMessage([error.response?.data?.message]);
+      if (error.response?.data) {
+        // Check if the error response has a 'message' field (text error)
+        if (error.response.data.message) {
+          setErrorMessage([error.response.data.message]);
+        }
+        // Check if the error response is an object with key-value pairs
+        else if (typeof error.response.data === "object") {
+          const errorMessages = Object.entries(error.response.data).map(
+            ([key, value]) => `${key}: ${value}`
+          );
+          setErrorMessage(errorMessages);
+        }
+        // Handle unexpected error response format
+        else {
+          setErrorMessage(["An error occurred"]);
+        }
       }
-      else if (error.response?.data) {
-        const errorMessages = Object.entries(error.response.data).map(
-          ([key, value]) => `${key}: ${value}`
-        );
-        setErrorMessage(errorMessages);
-      } else {
+      // Handle cases where there is no response data
+      else {
         setErrorMessage(["An error occurred"]);
       }
+
+      // Open the error modal
       setIsErrorModalOpen(true);
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -117,7 +128,7 @@ const EmployeeForm = ({ employeeData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className={`shadow border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.company ? "border-red-500" : ""
                 }`}
               >
@@ -153,7 +164,7 @@ const EmployeeForm = ({ employeeData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className={`shadow border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.department ? "border-red-500" : ""
                 }`}
               >
@@ -189,7 +200,7 @@ const EmployeeForm = ({ employeeData }) => {
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.employee_name ? "border-red-500" : ""
                 }`}
                 placeholder="Employee Name"
@@ -226,7 +237,7 @@ const EmployeeForm = ({ employeeData }) => {
               <div>
                 <input
                   {...field}
-                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                  className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                     errors.email_address ? "border-red-500" : ""
                   }`}
                   placeholder="Email Address"
@@ -256,7 +267,8 @@ const EmployeeForm = ({ employeeData }) => {
             rules={{
               required: "Mobile Number is required",
               pattern: {
-                value: /^\+?1?\d{9,15}$/,
+                value:
+                  /^(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
                 message: "Invalid mobile number format",
               },
             }}
@@ -264,7 +276,7 @@ const EmployeeForm = ({ employeeData }) => {
               <div>
                 <input
                   {...field}
-                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                  className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                     errors.mobile_number ? "border-red-500" : ""
                   }`}
                   placeholder="Mobile Number"
@@ -295,7 +307,7 @@ const EmployeeForm = ({ employeeData }) => {
             render={({ field }) => (
               <textarea
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.address ? "border-red-500" : ""
                 }`}
                 placeholder="Address"
@@ -325,7 +337,7 @@ const EmployeeForm = ({ employeeData }) => {
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.designation ? "border-red-500" : ""
                 }`}
                 placeholder="Designation"
@@ -356,7 +368,7 @@ const EmployeeForm = ({ employeeData }) => {
               <input
                 type="date"
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.hired_on ? "border-red-500" : ""
                 }`}
               />
@@ -373,11 +385,11 @@ const EmployeeForm = ({ employeeData }) => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="btn btn-success text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="btn btn-success  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Submit
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+          <button className="btn btn-error" onClick={() => navigate(-1)}>
             Cancel
           </button>
         </div>
@@ -394,7 +406,11 @@ const EmployeeForm = ({ employeeData }) => {
       <div className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Success!</h3>
-          <p className="py-4">{employeeData?"Employee Updated successfully.":"Employee Created successfully."}</p>
+          <p className="py-4">
+            {employeeData
+              ? "Employee Updated successfully."
+              : "Employee Created successfully."}
+          </p>
           <div className="modal-action">
             <label
               htmlFor="success-modal"

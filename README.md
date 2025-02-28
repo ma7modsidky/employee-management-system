@@ -5,10 +5,14 @@ A Full-Stack **Django + React** Employee Management System Application
 ---
 
 ## **📂 Project Structure**
-```
 
-/project-root │── /back-end/       # Django (Backend) │── /front-end/      # React (Frontend) │── README.md        # Documentation
 
+````bash
+
+/project-root
+│── /back-end/       # Django (Backend)
+│── /front-end/      # React (Frontend)
+│── README.md        # Documentation
 ````
 
 ---
@@ -31,8 +35,8 @@ Make sure you have the following installed:
 
 ## **1️⃣ Clone the Repository**
 ```bash
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/ma7modsidky/employee-management-system.git
+cd employee-management-system
 ````
 
 ---
@@ -42,7 +46,7 @@ cd your-repo
 Navigate to the backend folder:
 
 ```bash
-cd back-end
+cd ./back-end/
 ```
 
 ### **📌 Create a Virtual Environment**
@@ -82,12 +86,24 @@ python manage.py migrate
 ```
 
 ### **📌 Create a Superuser (For Admin Panel)**
+You can skip this if you follow the setup data step
 
 ```bash
 python manage.py createsuperuser
 ```
 
 Follow the prompts to set up an admin account.
+
+### **📌 Setup data in the project for testing**
+Populates the database with different random records and 3 user accounts with different roles admin, manager, employee :
+1. admin@ems.com, password=12345
+1. manager@ems.com, password=12345
+1. employee@ems.com, password=12345
+
+
+```bash
+python setup_data.py
+```
 
 ### **📌 Start the Django Server**
 
@@ -114,12 +130,12 @@ cd front-end
 npm install  # or yarn install
 ```
 
-### **📌 Create a **``** File**
+<!-- ### **📌 Create a **``** File**
 
 Create a `.env` file in the **front-end/** directory and add:
 
 ```
-REACT_APP_BACKEND_URL=http://127.0.0.1:8000
+REACT_APP_BACKEND_URL=http://127.0.0.1:8000 -->
 ```
 
 ### **📌 Start the React App**
@@ -127,9 +143,14 @@ REACT_APP_BACKEND_URL=http://127.0.0.1:8000
 ```bash
 npm start  # or yarn start
 ```
+or 
+
+```bash
+npm run dev  
+```
 
 Your **React App** should now be running at:\
-📌 [**http://localhost:3000/**](http://localhost:3000/)
+📌 [**http://localhost:5173/**](http://localhost:5173/)
 
 ---
 
@@ -175,7 +196,7 @@ For production:
 ## **📌 Contributors**
 
 👤 **Your Name**\
-GitHub: [@yourusername](https://github.com/yourusername)
+GitHub: [@yourusername](https://github.com/ma7modsidky)
 
 ---
 

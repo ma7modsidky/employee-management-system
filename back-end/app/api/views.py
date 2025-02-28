@@ -5,11 +5,14 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import EmployeeFilter, DepartmentFilter
 from django.http import JsonResponse
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 
 # Company Views
 class CompanyList(generics.ListCreateAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
+    permission_classes= [IsAuthenticated]
 
 class CompanyDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()

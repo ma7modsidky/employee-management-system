@@ -14,17 +14,16 @@ const UserForm = ({ userData }) => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const url = userData?.id ? `/users/${userData.id}/` : "/users/";
-
+  const url = userData?.id ? `/users/${userData.id}/` : "/users/register/";
+  console.log(userData);
   // Prefill the form when `userData` changes
   useEffect(() => {
     if (userData) {
       reset({
-        username: userData.username,
+        user_name: userData.user_name,
+        name: userData.name,
         email: userData.email,
         role: userData.role,
-        mobile_number: userData.mobile_number,
-        address: userData.address,
       });
     }
   }, [userData, reset]);
@@ -33,8 +32,11 @@ const UserForm = ({ userData }) => {
     try {
       let response;
       if (userData) {
-        response = await axios.put(url, data);
+        // If editing an existing user, exclude the password field
+        const { password, ...userDataWithoutPassword } = data;
+        response = await axios.put(url, userDataWithoutPassword);
       } else {
+        // If creating a new user, include the password field
         response = await axios.post(url, data);
       }
 
@@ -43,20 +45,33 @@ const UserForm = ({ userData }) => {
 
       // Redirect to user detail page after 2 seconds
       setTimeout(() => {
-        navigate(`/user/${response.data.id}`);
+        navigate(`/users/${response.data.id}`);
       }, 2000);
     } catch (error) {
       // Set error message and show error modal
-      if (error.response?.data?.message) {
-        setErrorMessage([error.response?.data?.message]);
-      } else if (error.response?.data) {
-        const errorMessages = Object.entries(error.response.data).map(
-          ([key, value]) => `${key}: ${value}`
-        );
-        setErrorMessage(errorMessages);
-      } else {
+      if (error.response?.data) {
+        // Check if the error response has a 'message' field (text error)
+        if (error.response.data.message) {
+          setErrorMessage([error.response.data.message]);
+        }
+        // Check if the error response is an object with key-value pairs
+        else if (typeof error.response.data === "object") {
+          const errorMessages = Object.entries(error.response.data).map(
+            ([key, value]) => `${key}: ${value}`
+          );
+          setErrorMessage(errorMessages);
+        }
+        // Handle unexpected error response format
+        else {
+          setErrorMessage(["An error occurred"]);
+        }
+      }
+      // Handle cases where there is no response data
+      else {
         setErrorMessage(["An error occurred"]);
       }
+
+      // Open the error modal
       setIsErrorModalOpen(true);
     }
   };
@@ -71,28 +86,28 @@ const UserForm = ({ userData }) => {
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="username"
+            htmlFor="user_name"
           >
             Username
           </label>
           <Controller
-            name="username"
+            name="user_name"
             control={control}
             defaultValue=""
             rules={{ required: "Username is required" }}
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.username ? "border-red-500" : ""
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.user_name ? "border-red-500" : ""
                 }`}
                 placeholder="Username"
               />
             )}
           />
-          {errors.username && (
+          {errors.user_name && (
             <p className="text-red-500 text-xs italic">
-              {errors.username.message}
+              {errors.user_name.message}
             </p>
           )}
         </div>
@@ -119,7 +134,7 @@ const UserForm = ({ userData }) => {
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.email ? "border-red-500" : ""
                 }`}
                 placeholder="Email"
@@ -149,99 +164,100 @@ const UserForm = ({ userData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className={`shadow border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.role ? "border-red-500" : ""
                 }`}
               >
                 <option value="">Select a role</option>
                 <option value="admin">Admin</option>
                 <option value="manager">Manager</option>
-                <option value="user">User</option>
+                <option value="employee">Employee</option>
               </select>
             )}
           />
           {errors.role && (
-            <p className="text-red-500 text-xs italic">
-              {errors.role.message}
-            </p>
+            <p className="text-red-500 text-xs italic">{errors.role.message}</p>
           )}
         </div>
 
-        {/* Mobile Number Field */}
+        {/* Name Field */}
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="mobile_number"
+            htmlFor="name"
           >
-            Mobile Number
+            Name
           </label>
           <Controller
-            name="mobile_number"
+            name="name"
             control={control}
             defaultValue=""
-            rules={{
-              required: "Mobile Number is required",
-              pattern: {
-                value: /^\+?1?\d{9,15}$/,
-                message: "Invalid mobile number format",
-              },
-            }}
+            rules={{ required: "Name is required" }}
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.mobile_number ? "border-red-500" : ""
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.name ? "border-red-500" : ""
                 }`}
-                placeholder="Mobile Number"
+                placeholder="Name"
               />
             )}
           />
-          {errors.mobile_number && (
+          {errors.name && (
             <p className="text-red-500 text-xs italic">
-              {errors.mobile_number.message}
+              {errors.name.message}
             </p>
           )}
         </div>
 
-        {/* Address Field */}
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="address"
-          >
-            Address
-          </label>
-          <Controller
-            name="address"
-            control={control}
-            defaultValue=""
-            rules={{ required: "Address is required" }}
-            render={({ field }) => (
-              <textarea
-                {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.address ? "border-red-500" : ""
-                }`}
-                placeholder="Address"
-              />
+        {/* Password Field (Only for new users) */}
+        {!userData && (
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: "Password is required",
+                minLength: {
+                  value: 5,
+                  message: "Password must be at least 5 characters",
+                },
+              }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  type="password"
+                  className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
+                    errors.password ? "border-red-500" : ""
+                  }`}
+                  placeholder="Password"
+                />
+              )}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs italic">
+                {errors.password.message}
+              </p>
             )}
-          />
-          {errors.address && (
-            <p className="text-red-500 text-xs italic">
-              {errors.address.message}
-            </p>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Submit Button */}
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="btn btn-success text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="btn btn-success  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Submit
           </button>
-          <button className="btn btn-ghost" onClick={() => navigate(-1)}>
+          <button className="btn btn-error" onClick={() => navigate(-1)}>
             Cancel
           </button>
         </div>
@@ -258,7 +274,9 @@ const UserForm = ({ userData }) => {
         <div className="modal-box">
           <h3 className="font-bold text-lg">Success!</h3>
           <p className="py-4">
-            {userData ? "User Updated successfully." : "User Created successfully."}
+            {userData
+              ? "User Updated successfully."
+              : "User Created successfully."}
           </p>
           <div className="modal-action">
             <label
@@ -296,7 +314,7 @@ const UserForm = ({ userData }) => {
           <div className="modal-action">
             <label
               htmlFor="error-modal"
-              className="btn btn-error"
+              className="bstn btn-error"
               onClick={() => setIsErrorModalOpen(false)}
             >
               Close

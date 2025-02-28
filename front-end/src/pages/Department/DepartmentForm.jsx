@@ -16,7 +16,9 @@ const DepartmentForm = ({ departmentData }) => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
-  const url = departmentData?.id ? `/departments/${departmentData.id}/` : "/departments/";
+  const url = departmentData?.id
+    ? `/departments/${departmentData.id}/`
+    : "/departments/";
 
   // Fetch companies
   useEffect(() => {
@@ -55,16 +57,29 @@ const DepartmentForm = ({ departmentData }) => {
       }, 2000);
     } catch (error) {
       // Set error message and show error modal
-      if (error.response.data.message) {
-        setErrorMessage([error.response?.data?.message]);
-      } else if (error.response?.data) {
-        const errorMessages = Object.entries(error.response.data).map(
-          ([key, value]) => `${key}: ${value}`
-        );
-        setErrorMessage(errorMessages);
-      } else {
+      if (error.response?.data) {
+        // Check if the error response has a 'message' field (text error)
+        if (error.response.data.message) {
+          setErrorMessage([error.response.data.message]);
+        }
+        // Check if the error response is an object with key-value pairs
+        else if (typeof error.response.data === "object") {
+          const errorMessages = Object.entries(error.response.data).map(
+            ([key, value]) => `${key}: ${value}`
+          );
+          setErrorMessage(errorMessages);
+        }
+        // Handle unexpected error response format
+        else {
+          setErrorMessage(["An error occurred"]);
+        }
+      }
+      // Handle cases where there is no response data
+      else {
         setErrorMessage(["An error occurred"]);
       }
+
+      // Open the error modal
       setIsErrorModalOpen(true);
     }
   };
@@ -91,7 +106,7 @@ const DepartmentForm = ({ departmentData }) => {
             render={({ field }) => (
               <select
                 {...field}
-                className={`shadow border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline ${
                   errors.company ? "border-red-500" : ""
                 }`}
               >
@@ -127,7 +142,7 @@ const DepartmentForm = ({ departmentData }) => {
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
+                className={`shadow appearance-none border rounded w-full py-2 px-3  leading-tight focus:outline-none focus:shadow-outline ${
                   errors.department_name ? "border-red-500" : ""
                 }`}
                 placeholder="Department Name"
@@ -145,7 +160,7 @@ const DepartmentForm = ({ departmentData }) => {
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="btn btn-success text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="btn btn-success  font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Submit
           </button>
@@ -166,7 +181,9 @@ const DepartmentForm = ({ departmentData }) => {
         <div className="modal-box">
           <h3 className="font-bold text-lg">Success!</h3>
           <p className="py-4">
-            {departmentData ? "Department Updated successfully." : "Department Created successfully."}
+            {departmentData
+              ? "Department Updated successfully."
+              : "Department Created successfully."}
           </p>
           <div className="modal-action">
             <label

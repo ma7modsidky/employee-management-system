@@ -36,7 +36,7 @@ const GenericDetail = ({ record, onEdit, onDelete , fields, name}) => {
                 className="input input-bordered w-full text-white"
               />
             ) : (
-              <p className="text-lg text-white">{key === 'company' || key ==='department' ? record[key][`${key}_name`] : 
+              <p className="text-lg">{key === 'company' || key ==='department' ? record[key][`${key}_name`] : 
               record[key]}</p>
             )}
           </div>
@@ -72,7 +72,7 @@ const GenericDetail = ({ record, onEdit, onDelete , fields, name}) => {
             </Link>
             <button
               onClick={onDelete}
-              className="btn btn-error p-4"
+              className="btn btn-error  p-4"
             >
               Delete
             </button>

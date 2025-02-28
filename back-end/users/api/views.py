@@ -1,6 +1,7 @@
-from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
-from rest_framework.permissions import AllowAny
-from .serializers import UserRegistrationSerializer, MyTokenObtainPairSerializer , UserUpdateSerializer, UserDetailSerializer
+# views.py
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, OR
+from .serializers import UserRegistrationSerializer, MyTokenObtainPairSerializer, UserUpdateSerializer, UserDetailSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
@@ -8,29 +9,35 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 from .exceptions import InvalidUser
-from rest_framework.parsers import FormParser
 from django.contrib.auth import get_user_model
-from .permissions import UserUpdatePermission
+from .permissions import IsAdminOrManager, IsAdmin, IsEmployee, IsOwnerOrAdmin
 
 User = get_user_model()
+
 class UserRegistrationView(CreateAPIView):
     serializer_class = UserRegistrationSerializer
     permission_classes = [AllowAny]
 
-class UserUpdateView(UpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserUpdateSerializer
-    parser_classes = [FormParser]
-    permission_classes = [UserUpdatePermission]
-    
-
-class UserDetailView(RetrieveAPIView):
+class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            # Only admin can update the role field
+            return [IsAuthenticated(), IsAdmin()]
+        elif self.request.method == 'DELETE':
+            # Only admin can delete users
+            return [IsAuthenticated(), IsAdmin()]
+        else:
+            # Admin, manager, and employee (only their own details) can retrieve
+            return [IsAuthenticated(), OR(IsAdminOrManager(), IsOwnerOrAdmin())]
 
 class UserListView(ListAPIView):
     queryset = User.objects.all()
-    serializer_class= UserDetailSerializer
+    serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrManager] 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer

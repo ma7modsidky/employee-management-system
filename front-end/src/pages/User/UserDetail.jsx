@@ -1,16 +1,17 @@
 import GenericDetail from "../../components/Generics/GenericDetail";
 import useFetch from "../../hooks/useFetch";
 import { useParams, Outlet} from "react-router-dom";
-import EmployeeList from "../Employee/EmployeeList";
-function DepartmentDetail() {
+
+function UserDetail() {
   const fields = {
     id: { label: "ID", editable: false },
-    company: { label: "Company" , editable: false},
-    department_name: { label: "Department Name" , editable: true},
-    number_of_employees:{ label: "Employees", editable: false },
+    user_name: { label: "Username" , editable: false},
+    name: { label: "Name" , editable: true},
+    email: { label: "Email" , editable: true},
+    role:{ label: "Role", editable: false },
   }
-  const { departmentId } = useParams();
-  const { data, loading, error } = useFetch(`departments/${departmentId}`);
+  const { userId } = useParams();
+  const { data, loading, error } = useFetch(`users/${userId}`);
   const handleEdit = (updatedRecord) => {
     console.log("Updated Record:", updatedRecord);
   };
@@ -18,7 +19,6 @@ function DepartmentDetail() {
   const handleDelete = () => {
     console.log("Record Deleted");
   };
-  
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
   return (
@@ -28,15 +28,10 @@ function DepartmentDetail() {
           onEdit={handleEdit}
           onDelete={handleDelete}
           fields={fields}
-          name= 'Department'
+          name= 'User'
         />
-        <EmployeeList departmentId={departmentId}/>
-        <Outlet />
     </div>
-    
-
-    
-  );
+  )
 }
 
-export default DepartmentDetail
+export default UserDetail

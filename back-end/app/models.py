@@ -45,7 +45,13 @@ class Employee(models.Model):
     employee_name = models.CharField(max_length=255)
     email_address = models.EmailField(unique=True, validators=[EmailValidator()])
     mobile_number = models.CharField(
-        max_length=15, validators=[RegexValidator(r"^\+?1?\d{9,15}$")]
+        max_length=20,  
+        validators=[
+            RegexValidator(
+                regex=r'^(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$',
+                message="Invalid mobile number format. Valid formats: (911)667-3914, 911-667-3914, +1-911-667-3914, etc."
+            )
+        ]
     )
     address = models.TextField()
     designation = models.CharField(max_length=255)

@@ -15,6 +15,7 @@ const EmployeeList = ({departmentId}) => {
 
   const { data, loading, error } = useFetch(url);
   const [filteredData, setFilteredData] = useState([]);
+  console.log(data)
   useEffect(() => {
     if (data && data.length > 0) {
       setFilteredData([...data]); // Update filteredData once data is fetched
@@ -24,14 +25,24 @@ const EmployeeList = ({departmentId}) => {
   const handleFilter = (filters) => {
     const filtered = data.filter((employee) =>
       Object.keys(filters).every((key) => {
-        // Ensure both the filter value and the employee value are strings
         const filterValue = filters[key]?.toString().toLowerCase() || "";
-        const employeeValue = employee[key]?.toString().toLowerCase() || "";
+        
+        // Handle nested fields
+        let employeeValue;
+        if (key === "company") {
+          employeeValue = employee.company?.company_name?.toString().toLowerCase() || "";
+        } else if (key === "department") {
+          employeeValue = employee.department?.department_name?.toString().toLowerCase() || "";
+        } else {
+          employeeValue = employee[key]?.toString().toLowerCase() || "";
+        }
+  
         return employeeValue.includes(filterValue);
       })
     );
     setFilteredData(filtered);
   };
+  
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 

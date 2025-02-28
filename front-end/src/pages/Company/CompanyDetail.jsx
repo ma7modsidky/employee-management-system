@@ -2,7 +2,6 @@ import GenericDetail from "../../components/Generics/GenericDetail";
 import useFetch from "../../hooks/useFetch";
 import { useParams, Link, Outlet} from "react-router-dom";
 import DepartmentList from "../Department/DepartmentList";
-import GenericAccordion from "../../components/Generics/GenericAccordion";
 function CompanyDetail() {
   const fields = {
     id: { label: "ID", editable: false },

@@ -13,10 +13,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+    const accessToken = localStorage.getItem("access_token");
 
-    if (authTokens) {
-      config.headers.Authorization = `Bearer ${authTokens.access}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
@@ -37,32 +37,37 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const authTokens = JSON.parse(localStorage.getItem("authTokens"));
+        const refreshToken = localStorage.getItem("refresh_token");
+
+        if (!refreshToken) {
+          throw new Error("No refresh token available");
+        }
+
         const response = await axios.post(`${baseURL}token/refresh/`, {
-          refresh: authTokens.refresh,
+          refresh: refreshToken,
         });
 
-        localStorage.setItem(
-          "authTokens",
-          JSON.stringify({
-            ...authTokens,
-            access: response.data.access,
-          })
-        );
+        const newAccessToken = response.data.access;
 
-        axiosInstance.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${response.data.access}`;
-        originalRequest.headers["Authorization"] = `Bearer ${response.data.access}`;
+        if (newAccessToken) {
+          localStorage.setItem("access_token", newAccessToken);
 
-        return axiosInstance(originalRequest);
+          axiosInstance.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+          return axiosInstance(originalRequest);
+        }
       } catch (refreshError) {
         console.error("Unable to refresh token:", refreshError);
-        localStorage.removeItem("authTokens");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         window.location.href = "/login"; // Redirect to login page
         return Promise.reject(refreshError);
       }
     }
+
 
     return Promise.reject(error);
   }

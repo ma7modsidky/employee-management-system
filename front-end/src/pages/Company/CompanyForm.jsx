@@ -15,7 +15,7 @@ const CompanyForm = ({ companyData }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const url = companyData?.id ? `/companies/${companyData.id}/` : "/companies/";
-  console.log(companyData)
+  console.log(companyData);
   // Prefill the form when `companyData` changes
   useEffect(() => {
     if (companyData) {
@@ -43,16 +43,29 @@ const CompanyForm = ({ companyData }) => {
       }, 2000);
     } catch (error) {
       // Set error message and show error modal
-      if (error.response?.data?.message) {
-        setErrorMessage([error.response?.data?.message]);
-      } else if (error.response?.data) {
-        const errorMessages = Object.entries(error.response.data).map(
-          ([key, value]) => `${key}: ${value}`
-        );
-        setErrorMessage(errorMessages);
-      } else {
+      if (error.response?.data) {
+        // Check if the error response has a 'message' field (text error)
+        if (error.response.data.message) {
+          setErrorMessage([error.response.data.message]);
+        }
+        // Check if the error response is an object with key-value pairs
+        else if (typeof error.response.data === "object") {
+          const errorMessages = Object.entries(error.response.data).map(
+            ([key, value]) => `${key}: ${value}`
+          );
+          setErrorMessage(errorMessages);
+        }
+        // Handle unexpected error response format
+        else {
+          setErrorMessage(["An error occurred"]);
+        }
+      }
+      // Handle cases where there is no response data
+      else {
         setErrorMessage(["An error occurred"]);
       }
+
+      // Open the error modal
       setIsErrorModalOpen(true);
     }
   };
@@ -79,8 +92,12 @@ const CompanyForm = ({ companyData }) => {
             render={({ field }) => (
               <input
                 {...field}
-                className={`shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline ${
-                  errors.company_name ? "border-red-500" : ""
+                className={`shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline ${
+                  errors.company_name ? "border-red-500" : "border-gray-300"
+                } ${
+                  document.documentElement.classList.contains("dark")
+                    ? "bg-gray-800 text-white placeholder-gray-400"
+                    : "bg-white text-gray-700 placeholder-gray-500"
                 }`}
                 placeholder="Company Name"
               />
@@ -112,13 +129,15 @@ const CompanyForm = ({ companyData }) => {
         type="checkbox"
         id="success-modal"
         className="modal-toggle"
-        checked={isSuccessModalOpen}
+        
       />
       <div className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg">Success!</h3>
           <p className="py-4">
-            {companyData ? "Company Updated successfully." : "Company Created successfully."}
+            {companyData
+              ? "Company Updated successfully."
+              : "Company Created successfully."}
           </p>
           <div className="modal-action">
             <label

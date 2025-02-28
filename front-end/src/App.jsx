@@ -1,6 +1,4 @@
 import "./App.css";
-import Navbar from "./components/Navbar/Navbar";
-import Footer from "./components/Footer/Footer";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
@@ -18,9 +16,13 @@ import EmployeeList from "./pages/Employee/EmployeeList";
 import EmployeeDetail from "./pages/Employee/EmployeeDetail";
 import EmployeeCreate from "./pages/Employee/EmployeeCreate";
 import EmployeeEdit from "./pages/Employee/EmployeeEdit";
-import EmployeeForm from "./pages/Employee/EmployeeForm";
+import UserList from "./pages/User/UserList";
+import UserDetail from "./pages/User/UserDetail";
+import UserCreate from "./pages/User/UserCreate";
+import UserEdit from "./pages/User/UserEdit";
 import Layout from "./components/Layout";
 import DepartmentPageLayout from "./pages/Department/DepartmentPageLayout";
+import Unauthorized from "./pages/Unauthorized";
 function App() {
   return (
     <>
@@ -48,22 +50,32 @@ function App() {
               </Route>
               <Route path='create' element={<CompanyCreate />} />
             </Route>
+            {/* All Departments Management */}
             <Route path="/department">
               <Route index element={<DepartmentList />} />
               <Route path=":departmentId" element={<DepartmentDetail />} />
               <Route path="create" element={<DepartmentCreate />} />
               <Route path=":departmentId/edit" element={<DepartmentEdit />} />
             </Route>
+            {/* All Employees Management */}
             <Route path="/employee">
               <Route index element={<EmployeeList />} />
               <Route path=":employeeId" element={<EmployeeDetail />} />
               <Route path="create" element={<EmployeeCreate />} />
               <Route path=":employeeId/edit" element={<EmployeeEdit />} />
             </Route>
+            {/* All Users Management */}
+            <Route path="/users">
+              <Route index element={<UserList />} />
+              <Route path=":userId" element={<UserDetail />} />
+              <Route path="create" element={<UserCreate />} />
+              <Route path=":userId/edit" element={<UserEdit />} />
+            </Route>
           </Route>
 
           {/* Fallback Route */}
-          {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </>

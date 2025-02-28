@@ -1,5 +1,7 @@
+// GenericTable.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filterValues, setFilterValues] = useState({});
@@ -13,7 +15,22 @@ const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filterValues, [key]: value };
     setFilterValues(newFilters);
-    onFilter(newFilters);
+    onFilter(newFilters); // Pass filters to parent component
+  };
+
+  // Generate pagination range
+  const getPaginationRange = () => {
+    const totalPageButtons = 5; // Number of page buttons to show at a time
+    const halfRange = Math.floor(totalPageButtons / 2);
+
+    let start = Math.max(currentPage - halfRange, 1);
+    let end = Math.min(start + totalPageButtons - 1, totalPages);
+
+    if (end - start + 1 < totalPageButtons) {
+      start = Math.max(end - totalPageButtons + 1, 1);
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   return (
@@ -41,10 +58,7 @@ const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
                   {col.header}
                 </th>
               ))}
-              <th className="bg-base-200">
-                  Details
-              </th>
-              
+              <th className="bg-base-200">Details</th>
             </tr>
           </thead>
           <tbody>
@@ -52,12 +66,14 @@ const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
               <tr key={rowIndex} className="hover:bg-base-200">
                 {columns.map((col) => (
                   <td key={col.key}>
-                  {col.key === 'company' || col.key ==='department' ? row[col.key][`${col.key}_name`] : 
-              row[col.key]}
-                  
+                    {typeof row[col.key] === "object" && row[col.key] !== null
+                      ? row[col.key][`${col.key}_name`] // Access nested object property
+                      : row[col.key]}
                   </td>
                 ))}
-                <td><Link to={`/${detailPrefix}/${row['id']}`}>Details</Link></td>
+                <td>
+                  <Link to={`/${detailPrefix}/${row["id"]}`}>Details</Link>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -65,7 +81,8 @@ const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-center items-center mt-4 gap-2">
+        {/* Previous Button */}
         <button
           className="btn btn-sm"
           disabled={currentPage === 1}
@@ -73,9 +90,21 @@ const GenericTable = ({ data, columns, pageSize, onFilter, detailPrefix }) => {
         >
           Previous
         </button>
-        <span className="text-sm">
-          Page {currentPage} of {totalPages}
-        </span>
+
+        {/* Page Buttons */}
+        {getPaginationRange().map((page) => (
+          <button
+            key={page}
+            className={`btn btn-sm ${
+              currentPage === page ? "btn-active" : ""
+            }`}
+            onClick={() => setCurrentPage(page)}
+          >
+            {page}
+          </button>
+        ))}
+
+        {/* Next Button */}
         <button
           className="btn btn-sm"
           disabled={currentPage === totalPages}
